@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ..clear()
               ..addAll(messages);
             title = '${openChannel.name} (${messageList.length})';
-            Future.delayed(Duration(milliseconds: 200),() {
+            Future.delayed(Duration(milliseconds: 50),() {
                       setState(() {
                         _scrollController.animateTo(
                           _scrollController.position.maxScrollExtent,
@@ -101,6 +101,16 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         messageList.add(message);
         title = '${openChannel.name} (${messageList.length})';
+
+        Future.delayed(Duration(milliseconds: 200),() {
+          setState(() {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeOut,
+            );
+          });
+        });
       });
 
     });
@@ -149,7 +159,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildReceivedMessage(BaseMessage message) {
     String receivedTime = DateFormat('h:mm a', 'ko_KR').format(DateTime.fromMillisecondsSinceEpoch(message.createdAt));
-
     return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -167,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                  margin: const EdgeInsets.all(5),
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                   constraints: BoxConstraints(
                       maxWidth: MediaQuery.sizeOf(context).width / 2 + 80
@@ -184,8 +193,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if(message.sender?.nickname != null || message.sender?.userId != null)
-                        Text(message.sender?.nickname ?? message.sender!.userId.substring(1,8), style: const TextStyle(color: Color(0xffADADAD), fontSize: 14)),
+
+                      Text(message.sender?.nickname.isNotEmpty != null ? message.sender!.nickname : message.sender!.userId.substring(1,8), style: const TextStyle(color: Color(0xffADADAD), fontSize: 14)),
 
                       Text(message.message, style: TextStyle(color: Colors.white, fontSize: 16),),
                     ],
@@ -229,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 colors: [Color(0xffFF006B), Color(0xffFF4593)],
               ),
             ),
-              child: Flexible(child: Text(message.message, style: const TextStyle(color: Colors.white),maxLines: 1000))
+              child: Text(message.message, style: const TextStyle(color: Colors.white),maxLines: 1000)
           ),
         ],
       ),
@@ -274,6 +283,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   IconButton(
                     icon: Icon(CupertinoIcons.arrow_up_circle_fill,
+                      size: 34,
                       color: haveText ? Keys.primaryColor : Keys.borderColor,//#FF006A
                     ),
                     onPressed: () => _sendMessage(),
